@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CalendarApp.Api/CalendarApp.Api.csproj" />
+  <Project Path="CalendarApp.Background/CalendarApp.Background.csproj" />
+</Solution>

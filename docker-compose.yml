@@ -1,0 +1,45 @@
+services:
+  
+  postgres:
+    image: postgres:17.7
+    container_name: postgres
+    volumes:
+      - .container-data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=mystrongpassword
+      - POSTGRES_USER=admin
+    ports:
+      - "5432:5432"
+        
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    volumes:
+      - .container-data/rabbitmq/data/:/var/lib/rabbitmq
+      - .container-data/rabbitmq/logs/:/var/log/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+        
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - .container-data/redis:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    volumes:
+      - .container-data/redisinsight:/data
+    depends_on:
+      - redis

@@ -2,13 +2,16 @@ using CalendarApp.Background.Clients;
 using CalendarApp.Background.Features;
 using CalendarApp.Background.Persistence;
 using MassTransit;
+using MassTransit.Logging;
 using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddHttpClient<KayaposoftClient>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["Kayaposoft:ApiUrl"]!);
+    client.BaseAddress = new Uri("https://Kayaposoft");
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -29,6 +32,14 @@ builder.Services.AddMassTransit(busConfig =>
     });
 });
 
+builder.Services.AddOpenTelemetry()
+    .WithTracing(config =>
+    {
+        config.AddSource(DiagnosticHeaders.DefaultListenerName);
+    });
+
 WebApplication app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.Run();

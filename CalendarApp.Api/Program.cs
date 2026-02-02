@@ -1,11 +1,14 @@
 using CalendarApp.Api.Features;
 using CalendarApp.Shared.Requests;
 using MassTransit;
+using MassTransit.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using Scalar.AspNetCore;
 using ZiggyCreatures.Caching.Fusion;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 builder.Services.AddOpenApi();
 
@@ -39,7 +42,15 @@ builder.Services.AddFusionCache()
 
 builder.Services.AddIsWorkDayServices();
 
+builder.Services.AddOpenTelemetry()
+    .WithTracing(config =>
+    {
+        config.AddSource(DiagnosticHeaders.DefaultListenerName);
+    });
+
 WebApplication app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.MapOpenApi();
 app.MapScalarApiReference();

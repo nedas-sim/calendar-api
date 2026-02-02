@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CalendarApp.ServiceDefaults\CalendarApp.ServiceDefaults.csproj" />
       <ProjectReference Include="..\CalendarApp.Shared\CalendarApp.Shared.csproj" />
     </ItemGroup>
 

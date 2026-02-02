@@ -1,5 +1,7 @@
 <Solution>
   <Project Path="CalendarApp.Api/CalendarApp.Api.csproj" />
+  <Project Path="CalendarApp.AppHost/CalendarApp.AppHost.csproj" />
   <Project Path="CalendarApp.Background/CalendarApp.Background.csproj" />
+  <Project Path="CalendarApp.ServiceDefaults/CalendarApp.ServiceDefaults.csproj" />
   <Project Path="CalendarApp.Shared/CalendarApp.Shared.csproj" />
 </Solution>

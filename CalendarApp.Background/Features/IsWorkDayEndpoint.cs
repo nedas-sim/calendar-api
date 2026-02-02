@@ -2,51 +2,32 @@
 using CalendarApp.Background.Clients;
 using CalendarApp.Background.Persistence;
 using CalendarApp.Background.Persistence.Entities;
-using Microsoft.AspNetCore.Mvc;
+using CalendarApp.Shared.Requests;
+using CalendarApp.Shared.Responses;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
-namespace CalendarApp.Background.Features.IsWorkDay;
+namespace CalendarApp.Background.Features;
 
-public static class IsWorkDayEndpoint
-{
-    extension(IServiceCollection services)
-    {
-        public IServiceCollection AddIsWorkDayServices()
-        {
-            services.AddScoped<IsWorkDayHandler>();
-            return services;
-        }
-    }
-    
-    extension(IEndpointRouteBuilder endpoints)
-    {
-        public IEndpointRouteBuilder MapIsWorkDay()
-        {
-            endpoints.MapGet(
-                "api/is-work-day", 
-                async (
-                    [FromQuery] string countryCode,
-                    [FromQuery] DateOnly date,
-                    [FromServices] IsWorkDayHandler handler) => Results.Ok(new
-                    {
-                        IsWorkDay = await handler.IsWorkDayAsync(countryCode, date),
-                    }));
-            
-            return endpoints;
-        }
-    }
-}
-
-public class IsWorkDayHandler(
+public class IsWorkDayConsumer(
     AppDbContext dbContext,
     KayaposoftClient kayaposoftClient,
-    ILogger<IsWorkDayHandler> logger)
+    ILogger<IsWorkDayConsumer> logger)
+    : IConsumer<IsWorkDayRequest>
 {
-    public async Task<bool> IsWorkDayAsync(
+    public async Task Consume(ConsumeContext<IsWorkDayRequest> context)
+    {
+        await context.RespondAsync(new IsWorkDayResponse
+        {
+            IsWorkDay = await IsWorkDayAsync(context.Message.CountryCode, context.Message.Date),
+        });
+    }
+    
+    private async Task<bool> IsWorkDayAsync(
         string countryCode,
         DateOnly date)
     {
-        using Activity? span = Activity.Current?.Source.StartActivity("is-work-day endpoint");
+        using Activity? _ = Activity.Current?.Source.StartActivity("is-work-day message consumer");
         
         logger.LogInformation("Received is-work-day request for {countryCode} at {date}", countryCode, date);
         

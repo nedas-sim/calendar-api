@@ -7,8 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.7" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
         <PackageReference Include="Scalar.AspNetCore" Version="2.12.18" />
+        <PackageReference Include="ZiggyCreatures.FusionCache" Version="2.5.0" />
+        <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" Version="2.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CalendarApp.Shared\CalendarApp.Shared.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using CalendarApp.Shared.Requests;
+﻿using System.Diagnostics;
+using CalendarApp.Shared.Requests;
 using CalendarApp.Shared.Responses;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
@@ -45,15 +46,26 @@ file class IsWorkDayHandler(
 {
     public async Task<bool> IsWorkDayAsync(string countryCode, DateOnly date)
     {
+        using Activity? span = Activity.Current?.Source.StartActivity("is-work-day request");
+        
         string cacheKey = $"is-work-day/{countryCode}-{date}";
+        span?.SetTag("cacheKey", cacheKey);
 
-        return await hybridCache.GetOrCreateAsync(
+        bool isWorkDay = await hybridCache.GetOrCreateAsync(
             cacheKey, 
             async _ => await GetFromExternalSourceAsync(countryCode, date));
+        
+        span?.SetTag("isWorkDay", isWorkDay);
+
+        return isWorkDay;
     }
 
     private async Task<bool> GetFromExternalSourceAsync(string countryCode, DateOnly date)
     {
+        using Activity? span = Activity.Current?.Source.StartActivity("is-work-day fetch with message");
+        span?.SetTag("countryCode", countryCode);
+        span?.SetTag("date", date);
+        
         IsWorkDayRequest request = new()
         {
             CountryCode = countryCode,
